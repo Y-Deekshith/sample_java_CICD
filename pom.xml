@@ -1,60 +1,69 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.akalashnykov</groupId>
-    <artifactId>tomcat-root-war</artifactId>
-    <packaging>war</packaging>
-    <version>1.0</version>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
+    <groupId>Cascade-Java-Web-Services-Example-Project</groupId>
+    <artifactId>Cascade-Java-Web-Services-Example-Project</artifactId>
+    <version>8.17</version>
 
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-            <scope>provided</scope>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>compile</scope>
         </dependency>
-
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-            <scope>provided</scope>
+            <groupId>axis</groupId>
+            <artifactId>axis</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>axis</groupId>
+            <artifactId>axis-jaxrpc</artifactId>
+            <version>1.4</version>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>ROOT</finalName>
+        <sourceDirectory>${basedir}/src/java</sourceDirectory>
+        <testSourceDirectory>${basedir}/src/java</testSourceDirectory>
         <plugins>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.48.v20220622</version>
-            </plugin>
-
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>axistools-maven-plugin</artifactId>
+                <version>1.4</version>
                 <configuration>
-                    <webResources>
-                        <resource>
-                            <directory>${project.build.directory}</directory>
-                            <targetPath>WEB-INF</targetPath>
-                            <excludes>
-                                <exclude>maven-status/</exclude>
-                            </excludes>
-                        </resource>
-                    </webResources>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <sourceDirectory>src/java/wsdl</sourceDirectory>
+                    <wsdlFiles>
+                        <wsdlFile>asset-operation.wsdl</wsdlFile>
+                    </wsdlFiles>
+                    <subPackageByFileName>false</subPackageByFileName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+    <organization>
+        <name>Hannon Hill</name>
+        <url>http://hannonhill.com</url>
+    </organization>
+    <scm>
+        <connection>scm:git:git://github.com/hannonhill/Webservices-Java-Sample-Project.git</connection>
+        <url>https://github.com/hannonhill/Webservices-Java-Sample-Project</url>
+    </scm>
 </project>
