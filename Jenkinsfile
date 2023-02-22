@@ -22,7 +22,7 @@ pipeline {
         stage('Maven Build stage') {
             steps {
                 sh 'mvn clean install'
-                sh 'mv target/*.war target/ROOT-${BUILD_NUMBER}.war' 
+                sh 'sudo mv target/tesla.war target/ROOT-${BUILD_NUMBER}.war' 
             }
         }
         stage('static code analysis') {
