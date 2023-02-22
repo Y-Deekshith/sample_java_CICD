@@ -22,7 +22,7 @@ pipeline {
         stage('Maven Build stage') {
             steps {
                 sh 'mvn clean install'
-                sh 'mv target/*.war ROOT${BUILD_NUMBER}.war' 
+                sh 'mv target/*.war target/ROOT${BUILD_NUMBER}.war' 
             }
         }
         stage('static code analysis') {
@@ -44,7 +44,7 @@ pipeline {
         stage('Uplode artifact') {
             steps {
                 script {
-                    nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: 'ROOT${BUILD_NUMBER}.war', type: 'war']], credentialsId: 'nexus-auth', groupId: 'com.mt', nexusUrl: 'ec2-52-90-97-151.compute-1.amazonaws.com:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'maven-public', version: '0.0.2-SNAPSHOT'
+                    nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: 'maven-web-application/target/ROOT${BUILD_NUMBER}.war', type: 'war']], credentialsId: 'nexus-auth', groupId: 'com.mt', nexusUrl: 'ec2-52-90-97-151.compute-1.amazonaws.com:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'maven-public', version: '0.0.2-SNAPSHOT'
                 }
             }
         }
