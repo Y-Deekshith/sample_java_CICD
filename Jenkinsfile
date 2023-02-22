@@ -41,26 +41,12 @@ pipeline {
                 }
             }
         }
-        // stage('Uplode artifact') {
-        //     steps {
-        //         script {
-        //             // nexusArtifactUploader artifacts: [[artifactId: 'springboot', classifier: '', file: 'target/Uber.jar', type: 'jar']], credentialsId: 'nexus-auth', groupId: 'com.example', nexusUrl: 'ec2-34-202-235-119.compute-1.amazonaws.com:8081/', nexusVersion: 'nexus3', protocol: 'http', repository: 'maven-snapshots', version: '1.0.0'
-        //             nexusArtifactUploader artifacts: [
-        //                 [artifactId: 'springboot',
-        //                  classifier: '',
-        //                   file: 'target/Uber.jar',
-        //                    type: 'jar'
-        //                    ]
-        //                    ],
-        //                     credentialsId: 'nexus-auth',
-        //                      groupId: 'com.example',
-        //                       nexusUrl: 'ec2-34-202-235-119.compute-1.amazonaws.com:8081',
-        //                        nexusVersion: 'nexus3',
-        //                         protocol: 'http',
-        //                          repository: 'maven-snapshots',
-        //                           version: '1.0.0-SNAPSHOT'
-        //         }
-        //     }
-        // }
+        stage('Uplode artifact') {
+            steps {
+                script {
+                    nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: '/target/ROOT-${BUILD_NUMBER}.war', type: 'war']], credentialsId: 'nexus-auth', groupId: 'com.mt', nexusUrl: 'ec2-52-90-97-151.compute-1.amazonaws.com:8081/', nexusVersion: 'nexus3', protocol: 'http', repository: 'maven-snapshots', version: '0.0.2-SNAPSHOT'
+                }
+            }
+        }
     }
 }
