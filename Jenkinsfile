@@ -4,6 +4,11 @@ pipeline {
         maven 'Maven3'
     }
     stages {
+        stage('Git Checkout'){
+            steps {
+                git 'https://github.com/Y-Deekshith/sample_java_CICD.git'
+            }
+        }
         stage('Unit test') {
             steps {
                 sh 'mvn test'
@@ -17,7 +22,7 @@ pipeline {
         stage('Maven Build stage') {
             steps {
                 sh 'mvn clean install'
-                // sh 'mv target/springboot-1.0.0.jar target/springboot-${BUILD_NUMBER}.jar' 
+                sh 'mv target/*.war target/ROOT-${BUILD_NUMBER}.war' 
             }
         }
         stage('static code analysis') {
