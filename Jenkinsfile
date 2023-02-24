@@ -22,7 +22,7 @@ pipeline {
         stage('Maven Build stage') {
             steps {
                 sh 'mvn clean install'
-                sh 'mv target/*.war target/maven-web-application-${BUILD_NUMBER}.war'
+                sh 'mv target/*.war maven-web-application-${BUILD_NUMBER}.war'
             }
         }
         stage('static code analysis') {
@@ -41,9 +41,11 @@ pipeline {
                 }
             }
         }
-        stage('Uplode artifact') {
+        stage('Uploading Artifact to cloud') {
             steps {
-                    nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: 'target/maven-web-application-${BUILD_NUMBER}.war', type: 'war']], credentialsId: 'nexus-auth', groupId: 'com.mt', nexusUrl: 'ec2-3-95-214-152.compute-1.amazonaws.com:8081/', nexusVersion: 'nexus3', protocol: 'http', repository: 'maven-snapshots', version: '0.0.2-SNAPSHOT'
+                sh 'aws s3 ls'
+                echo "${BUILD_NUMBER}"
+                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'dees3devops', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: '*.war', storageClass: 'STANDARD_IA', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'dees3devops', userMetadata: []
             }
         }
     }
