@@ -4,6 +4,16 @@ pipeline {
     tools {
         maven 'Maven3'
     }
+    environment {
+        registry = 'deekshithy/dockerfiles'
+        registryCredential = 'dockerhub_id'
+        // dockerSwarmManager = '10.40.1.26:2375'
+        // dockerhost = '10.40.1.26'
+        dockerImage = ''
+        PACKER_BUILD = 'NO'
+        TERRAFORM = 'NO'
+        INFRA = 'NO'
+    }
     stages {
         stage('Git Checkout'){
             steps {
@@ -23,7 +33,7 @@ pipeline {
         stage('Maven Build stage') {
             steps {
                 sh 'mvn clean install'
-                sh 'mv target/*.war maven-web-application-${BUILD_NUMBER}.war'
+                sh 'mv target/*.war target/maven-web-application-${BUILD_NUMBER}.war'
             }
         }
         stage('static code analysis') {
@@ -47,7 +57,14 @@ pipeline {
                 sh 'aws s3 ls'
                 echo "${BUILD_NUMBER}"
                 // s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'dees3devops', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: '*.war', storageClass: 'STANDARD_IA', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'dees3devops', userMetadata: []
-                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'dees3devops', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: '*.war', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'dees3devops', userMetadata: []
+                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'dees3devops', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'target/*.war', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'dees3devops', userMetadata: []
+            }
+        }
+        stage('Building our image') {
+            steps{
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
             }
         }
     }
