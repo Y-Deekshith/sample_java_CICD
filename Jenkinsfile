@@ -43,7 +43,7 @@ pipeline {
         // }
         stage('Uplode artifact') {
             steps {
-                    nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: 'target/maven-web-application-${BUILD_NUMBER}.war', type: 'war']], credentialsId: 'nexus-auth', groupId: 'com.mt', nexusUrl: 'ec2-52-90-97-151.compute-1.amazonaws.com:8081/', nexusVersion: 'nexus3', protocol: 'http', repository: 'maven-snapshots', version: '0.0.2-SNAPSHOT'
+                    nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: 'target/maven-web-application-${BUILD_NUMBER}.war', type: 'war']], credentialsId: 'nexus-auth', groupId: 'com.mt', nexusUrl: 'ec2-3-95-214-152.compute-1.amazonaws.com:8081/', nexusVersion: 'nexus3', protocol: 'http', repository: 'maven-snapshots', version: '0.0.2-SNAPSHOT'
             }
         }
     }
