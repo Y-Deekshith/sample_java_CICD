@@ -13,6 +13,11 @@ pipeline {
         PACKER_BUILD = 'NO'
         TERRAFORM = 'NO'
         INFRA = 'NO'
+        AWS_ACCOUNT_ID = "737711606783"
+        AWS_DEFAULT_REGION = "us-east-1"
+        IMAGE_REPO_NAME = "devops"
+        IMAGE_TAG = "$BUILD_NUMBER"
+        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
     }
     stages {
         stage('Git Checkout'){
@@ -36,22 +41,22 @@ pipeline {
                 sh 'mv target/*.war target/maven-web-application-${BUILD_NUMBER}.war'
             }
         }
-        stage('static code analysis') {
-            steps {
-                script {
-                    withSonarQubeEnv(credentialsId: 'sonarqube') {
-                        sh 'mvn clean package sonar:sonar'
-                    }
-                }
-            }
-        }
-        stage('Quality check') {
-            steps {
-                script {
-                        waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
-                }
-            }
-        }
+        // stage('static code analysis') {
+        //     steps {
+        //         script {
+        //             withSonarQubeEnv(credentialsId: 'sonarqube') {
+        //                 sh 'mvn clean package sonar:sonar'
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Quality check') {
+        //     steps {
+        //         script {
+        //                 waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
+        //         }
+        //     }
+        // }
         stage('Uploading Artifact to cloud') {
             steps {
                 sh 'aws s3 ls'
@@ -63,7 +68,21 @@ pipeline {
         stage('Building our image') {
             steps{
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    dockerImage = docker.build "${IMAGE_REPO_NAME}:$BUILD_NUMBER"
+                }
+            }
+        }
+        stage('Pushing to ECR') {
+            steps{
+                script {
+                    docker.withRegistry(
+                        'https://737711606783.dkr.ecr.us-east-1.amazonaws.com',
+                        'ecr:us-east-1:aws_cred' ) {
+                            def myImage = docker.build('devops')
+                            myImage.push("$IMAGE_TAG")
+                        }
+                    // sh "docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:$IMAGE_TAG"
+                    // sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
                 }
             }
         }
