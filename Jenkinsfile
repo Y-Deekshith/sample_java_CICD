@@ -10,7 +10,7 @@ pipeline {
         AWS_DEFAULT_REGION = "us-east-1"
         IMAGE_REPO_NAME = "devops"
         IMAGE_TAG = "$BUILD_NUMBER"
-        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+        REPOSITORY_URI = "https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
         ECRcredentials = "ecr:${AWS_DEFAULT_REGION}:Aws_Cred"
     }
     stages {
@@ -55,17 +55,16 @@ pipeline {
             steps {
                 sh 'aws s3 ls'
                 echo "${BUILD_NUMBER}"
-                // s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'dees3devops', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: '*.war', storageClass: 'STANDARD_IA', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'dees3devops', userMetadata: []
                 s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'dees3devops', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'target/*.war', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'dees3devops', userMetadata: []
             }
         }
-        // stage('Building our image') {
-        //     steps{
-        //         script {
-        //             dockerImage = docker.build "${IMAGE_REPO_NAME}:$BUILD_NUMBER"
-        //         }
-        //     }
-        // }
+        stage('Building our image') {
+            steps{
+                script {
+                    dockerImage = docker.build "${IMAGE_REPO_NAME}:$BUILD_NUMBER"
+                }
+            }
+        }
         stage('Pushing to ECR') {
             steps{
                 script {
