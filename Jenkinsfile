@@ -5,14 +5,7 @@ pipeline {
         maven 'Maven3'
     }
     environment {
-        registry = 'deekshithy/dockerfiles'
-        registryCredential = 'dockerhub_id'
-        // dockerSwarmManager = '10.40.1.26:2375'
-        // dockerhost = '10.40.1.26'
         dockerImage = ''
-        PACKER_BUILD = 'NO'
-        TERRAFORM = 'NO'
-        INFRA = 'NO'
         AWS_ACCOUNT_ID = "737711606783"
         AWS_DEFAULT_REGION = "us-east-1"
         IMAGE_REPO_NAME = "devops"
@@ -65,25 +58,24 @@ pipeline {
                 s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'dees3devops', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'target/*.war', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'dees3devops', userMetadata: []
             }
         }
-        stage('Building our image') {
-            steps{
-                script {
-                    dockerImage = docker.build "${IMAGE_REPO_NAME}:$BUILD_NUMBER"
-                }
-            }
-        }
+        // stage('Building our image') {
+        //     steps{
+        //         script {
+        //             dockerImage = docker.build "${IMAGE_REPO_NAME}:$BUILD_NUMBER"
+        //         }
+        //     }
+        // }
         stage('Pushing to ECR') {
             steps{
                 script {
                     docker.withRegistry(
-                        "https://737711606783.dkr.ecr.us-east-1.amazonaws.com",
-                        "ecr:us-east-1:Aws_Cred" ) {
+                        "https://"$AWS_ACCOUNT_ID".dkr.ecr."$AWS_DEFAULT_REGION".amazonaws.com",
+                        "ecr:"$AWS_DEFAULT_REGION":Aws_Cred" ) {
                             def myImage = docker.build('devops')
                             myImage.push("$IMAGE_TAG")
-                        }
-                        
-                    // sh "docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:$IMAGE_TAG"
-                    // sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
+                        }        
+                // sh "docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:$IMAGE_TAG"
+                // sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
                 }
             }
         }
