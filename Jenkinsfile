@@ -77,7 +77,7 @@ pipeline {
                 script {
                     docker.withRegistry(
                         'https://737711606783.dkr.ecr.us-east-1.amazonaws.com',
-                        'ecr:us-east-1:aws_cred' ) {
+                        'ecr:us-east-1:Aws_Cred' ) {
                             def myImage = docker.build('devops')
                             myImage.push("$IMAGE_TAG")
                         }
