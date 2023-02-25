@@ -10,7 +10,8 @@ pipeline {
         AWS_DEFAULT_REGION = "us-east-1"
         IMAGE_REPO_NAME = "devops"
         IMAGE_TAG = "$BUILD_NUMBER"
-        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+        ECRcredentials = "ecr:${AWS_DEFAULT_REGION}:Aws_Cred"
     }
     stages {
         stage('Git Checkout'){
@@ -68,9 +69,7 @@ pipeline {
         stage('Pushing to ECR') {
             steps{
                 script {
-                    docker.withRegistry(
-                        "https://"${AWS_ACCOUNT_ID}".dkr.ecr."${AWS_DEFAULT_REGION}".amazonaws.com",
-                        "ecr:"${AWS_DEFAULT_REGION}":Aws_Cred" ) {
+                    docker.withRegistry(REPOSITORY_URI, ECRcredentials) {
                             def myImage = docker.build('devops')
                             myImage.push("$IMAGE_TAG")
                         }        
